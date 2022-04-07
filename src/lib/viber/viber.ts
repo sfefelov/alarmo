@@ -4,7 +4,14 @@ const TextMessage = require("viber-bot").Message.Text;
 const ContactMessage = require("viber-bot").Message.Contact;
 
 const tracer = require("tracer").colorConsole();
-const http = require("http");
+const https = require("https");
+const fs = require('fs');
+const hskey = fs.readFileSync('/etc/letsencrypt/live/ххх.mynetname.net/privkey.pem', 'utf8');
+const hscert = fs.readFileSync('/etc/letsencrypt/live/ххх.mynetname.net/cert.pem', 'utf8');
+                    const httpsOptions = {
+                    key:  hskey,
+                    cert: hscert
+                                        };
 
 const winston = require("winston");
 const toYAML = require("winston-console-formatter");
@@ -132,7 +139,7 @@ class ViberServer {
   }
 
   public start() {
-    const server = http.createServer(this.bot.middleware());
+     const server = https.createServer(httpsOptions, this.bot.middleware());
 
     server.listen(this.config.port, () => {
       tracer.log("start webhook server with config", this.config);
